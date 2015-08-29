@@ -7,6 +7,7 @@ import requests
 
 def getLinks(url, result, base):
     try:
+        # get page
         html_page = urllib2.urlopen(url)
         print url
     except urllib2.HTTPError:
@@ -24,6 +25,7 @@ def getLinks(url, result, base):
 
     soup = BeautifulSoup(html_page)
     links = soup.findAll('a')
+    # foreach link in page
     for link in links:
         if base in link.get('href') and link.get('href') not in result and link.get('href') != None:
             result.append(link.get('href'))
@@ -31,7 +33,7 @@ def getLinks(url, result, base):
 
     return result
 
-
+# Expecting URL as parameter
 if len(sys.argv) != 2:
     print 'File path needed'
     sys.exit(0)
