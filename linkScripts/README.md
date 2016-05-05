@@ -1,2 +1,2 @@
 # linkScripts
-An easy scrappers to check web links.
+An easy scrapper to check web links.
