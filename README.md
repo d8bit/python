@@ -1,2 +1,2 @@
-# Python scripts
-Some python scripts
+# Python URL scripts
+Some basic python scripts to check URLs.
