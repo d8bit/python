@@ -27,6 +27,8 @@ def getLinks(url, result, base):
     links = soup.findAll('a')
     # foreach link in page
     for link in links:
+        if '#' in link.get('href'):
+            print "Found '#' on ", url
         if base in link.get('href') and link.get('href') not in result and link.get('href') != None:
             result.append(link.get('href'))
             result.extend(getLinks(link.get('href'), result, base))
@@ -40,5 +42,9 @@ if len(sys.argv) != 2:
 
 url = sys.argv[1]
 base = urlparse(url).netloc
+baseArray = base.split('.')
+if 3 == len(baseArray):
+    base = ''.join((baseArray[1], '.', baseArray[2]))
+
 pages = []
 getLinks(url, pages, base)
