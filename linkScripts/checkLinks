@@ -39,8 +39,8 @@ def getLinks(url, pages, base):
         path = formatUrl(path)
         if base in path and path not in pages and path != None:
             pages.append(path)
-            t = threading.Thread(target=getLinks, args=(path,pages,base))
-            t.start()
+            thread = threading.Thread(target=getLinks, args=(path,pages,base))
+            thread.start()
 
     return pages
 
