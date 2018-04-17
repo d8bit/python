@@ -6,10 +6,10 @@ import urllib2
 import re
 import requests
 
-def getLinks(url, result, base):
+def getLinks(url, pages, base):
     try:
         if not isValidLink(url):
-            return result
+            return pages
 
         print url
         # get page
@@ -33,11 +33,11 @@ def getLinks(url, result, base):
             continue
 
         path = formatUrl(path)
-        if base in path and path not in result and path != None:
-            result.append(path)
-            result.extend(getLinks(path, result, base))
+        if base in path and path not in pages and path != None:
+            pages.append(path)
+            pages.extend(getLinks(path, pages, base))
 
-    return result
+    return pages
 
 def isValidLink(url):
     extensions = ['.jpg', '.png', '.pdf', '@']
