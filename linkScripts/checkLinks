@@ -1,0 +1,73 @@
+#!/usr/bin/python
+import sys
+from urlparse import urlparse
+from BeautifulSoup import BeautifulSoup
+import urllib2
+import httplib
+import re
+import requests
+import threading
+
+def getLinks(url, pages, base):
+    try:
+        if not isValidLink(url):
+            return pages
+
+        print url
+        # get page
+        html_page = urllib2.urlopen(url)
+    except httplib.InvalidURL:
+        return pages
+    except urllib2.HTTPError:
+        sys.exit("HTTP error on " + url)
+    except urllib2.URLError:
+        sys.exit("URL error on " + url)
+    except ValueError:
+        sys.exit("Value error on " + url)
+    except AttributeError:
+        sys.exit("Attribute error on " + url)
+
+    soup = BeautifulSoup(html_page)
+
+    links = soup.findAll('a')
+    # foreach link in page
+    for link in links:
+        path = link.get('href')
+        if path == None:
+            continue
+
+        path = formatUrl(path)
+        if base in path and path not in pages and path != None:
+            pages.append(path)
+            thread = threading.Thread(target=getLinks, args=(path,pages,base))
+            thread.start()
+
+    return pages
+
+def isValidLink(url):
+    extensions = ['.jpg', '.png', '.pdf', 'tel:', 'mailto:', 'javascript:']
+    for extension in extensions:
+        if extension in url:
+            return False
+
+    return True
+
+def formatUrl(url):
+    if url[0] == '/':
+        url = base + url
+    if not base in url and not 'http' in url:
+        url = base + '/' + url
+    # TODO: get from original url
+    if 'http' not in url:
+        url = 'http://' + url
+    return url
+
+# Expecting URL as parameter
+if len(sys.argv) != 2:
+    print 'File path needed'
+    sys.exit(0)
+
+url = sys.argv[1]
+base = urlparse(url).netloc
+pages = []
+getLinks(url, pages, base)
