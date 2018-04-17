@@ -8,9 +8,12 @@ import requests
 
 def getLinks(url, result, base):
     try:
+        if not isValidLink(url):
+            return result
+
+        print url
         # get page
         html_page = urllib2.urlopen(url)
-        print url
     except urllib2.HTTPError:
         sys.exit("HTTP error on " + url)
     except urllib2.URLError:
@@ -21,14 +24,35 @@ def getLinks(url, result, base):
         sys.exit("Attribute error on " + url)
 
     soup = BeautifulSoup(html_page)
+
     links = soup.findAll('a')
     # foreach link in page
     for link in links:
-        if base in link.get('href') and link.get('href') not in result and link.get('href') != None:
-            result.append(link.get('href'))
-            result.extend(getLinks(link.get('href'), result, base))
+        path = link.get('href')
+        if path == None:
+            continue
+
+        path = formatUrl(path)
+        if base in path and path not in result and path != None:
+            result.append(path)
+            result.extend(getLinks(path, result, base))
 
     return result
+
+def isValidLink(url):
+    extensions = ['.jpg', '.png', '.pdf', '@']
+    for extension in extensions:
+        if extension in url:
+            return False
+
+    return True
+
+def formatUrl(url):
+    if url[0] == '/':
+        url = base + url
+    if 'http' not in url:
+        url = 'http://' + url
+    return url
 
 # Expecting URL as parameter
 if len(sys.argv) != 2:
