@@ -50,6 +50,7 @@ def isValidLink(url):
 def formatUrl(url):
     if url[0] == '/':
         url = base + url
+    # TODO: get from original url
     if 'http' not in url:
         url = 'http://' + url
     return url
