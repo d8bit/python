@@ -6,6 +6,7 @@ import urllib2
 import httplib
 import re
 import requests
+import threading
 
 def getLinks(url, pages, base):
     try:
@@ -38,7 +39,8 @@ def getLinks(url, pages, base):
         path = formatUrl(path)
         if base in path and path not in pages and path != None:
             pages.append(path)
-            pages.extend(getLinks(path, pages, base))
+            t = threading.Thread(target=getLinks, args=(path,pages,base))
+            t.start()
 
     return pages
 
