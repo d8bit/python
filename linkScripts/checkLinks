@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sys
 from urlparse import urlparse
 from BeautifulSoup import BeautifulSoup
@@ -11,17 +12,13 @@ def getLinks(url, result, base):
         html_page = urllib2.urlopen(url)
         print url
     except urllib2.HTTPError:
-        print 'Error on ',url
-        return result
+        sys.exit("HTTP error on " + url)
     except urllib2.URLError:
-        print 'Error on ',url
-        return result
+        sys.exit("URL error on " + url)
     except ValueError:
-        print 'Error on ',url
-        return result
+        sys.exit("Value error on " + url)
     except AttributeError:
-        print 'Error on ',url
-        return result
+        sys.exit("Attribute error on " + url)
 
     soup = BeautifulSoup(html_page)
     links = soup.findAll('a')
