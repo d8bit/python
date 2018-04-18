@@ -13,18 +13,24 @@ def getLinks(url, pages, base):
         if not isValidLink(url):
             return pages
 
-        print url
         # get page
         html_page = urllib2.urlopen(url)
-    except httplib.InvalidURL:
+        code = html_page.getcode()
+        # print url + " -> " + str(code)
+    except httplib.InvalidURL, error:
+        print str(error) + " -> " + url
         return pages
-    except urllib2.HTTPError:
+    except urllib2.HTTPError, error:
+        print str(error) + " -> " + url
         sys.exit("HTTP error on " + url)
-    except urllib2.URLError:
+    except urllib2.URLError, error:
+        print str(error) + " -> " + url
         sys.exit("URL error on " + url)
-    except ValueError:
+    except ValueError, error:
+        print str(error) + " -> " + url
         sys.exit("Value error on " + url)
     except AttributeError:
+        print str(error) + " -> " + url
         sys.exit("Attribute error on " + url)
 
     soup = BeautifulSoup(html_page)
