@@ -15,8 +15,6 @@ def getLinks(url, pages, base):
 
         # get page
         html_page = urllib2.urlopen(url)
-        code = html_page.getcode()
-        # print url + " -> " + str(code)
     except httplib.InvalidURL, error:
         print str(error) + " -> " + url
         return pages
@@ -42,7 +40,7 @@ def getLinks(url, pages, base):
         if path == None:
             continue
 
-        path = formatUrl(path)
+        path = formatUrl(path, base)
         if base in path and path not in pages and path != None:
             pages.append(path)
             thread = threading.Thread(target=getLinks, args=(path,pages,base))
@@ -58,15 +56,18 @@ def isValidLink(url):
 
     return True
 
-def formatUrl(url):
-    if url[0] == '/':
-        url = base + url
-    if not base in url and not 'http' in url:
-        url = base + '/' + url
-    # TODO: get from original url
-    if 'http' not in url:
-        url = 'http://' + url
-    return url
+def formatUrl(path, base):
+    try:
+        if path[0] == '/' and path[1] == '/':
+            scheme = urlparse(base).scheme
+            path = scheme + ":" + path
+        if path[0] == '/':
+            path = base + path
+    except IndexError:
+        return base
+    if not base in path and not 'http' in path:
+        path = base + '/' + path
+    return path
 
 # Expecting URL as parameter
 if len(sys.argv) != 2:
@@ -74,6 +75,5 @@ if len(sys.argv) != 2:
     sys.exit(0)
 
 url = sys.argv[1]
-base = urlparse(url).netloc
 pages = []
-getLinks(url, pages, base)
+getLinks(url, pages, url)
