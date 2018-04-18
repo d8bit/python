@@ -42,6 +42,8 @@ def getLinks(url, pages, base):
 
         path = formatUrl(path, base)
         if base in path and path not in pages and path != None:
+            file = open("log.txt", "a")
+            file.write(path + "\n")
             pages.append(path)
             thread = threading.Thread(target=getLinks, args=(path,pages,base))
             thread.start()
@@ -76,4 +78,5 @@ if len(sys.argv) != 2:
 
 url = sys.argv[1]
 pages = []
+file = open("log.txt", "w")
 getLinks(url, pages, url)
