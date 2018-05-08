@@ -8,7 +8,8 @@ import re
 import requests
 import threading
 
-def getLinks(url, pages, base):
+def getLinks(url, pages, base, parentUrl=""):
+
     try:
         if not isValidLink(url):
             return pages
@@ -16,22 +17,27 @@ def getLinks(url, pages, base):
         # get page
         html_page = urllib2.urlopen(url)
     except httplib.InvalidURL, error:
-        print str(error) + " -> " + url
-        return pages
+        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        sys.exit("Invalid URL" + url)
     except urllib2.HTTPError, error:
-        print str(error) + " -> " + url
+        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("HTTP error on " + url)
     except urllib2.URLError, error:
-        print str(error) + " -> " + url
+        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("URL error on " + url)
     except ValueError, error:
-        print str(error) + " -> " + url
+        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Value error on " + url)
-    except AttributeError:
-        print str(error) + " -> " + url
+    except AttributeError, error:
+        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Attribute error on " + url)
 
-    soup = BeautifulSoup(html_page)
+    try:
+        soup = BeautifulSoup(html_page)
+    except UnicodeEncodeError, error:
+        # Pdf file
+        sys.exit("UnicodeEncodeError error on " + url)
+
 
     links = soup.findAll('a')
     # foreach link in page
@@ -45,7 +51,7 @@ def getLinks(url, pages, base):
             file = open("log.txt", "a")
             file.write(path + "\n")
             pages.append(path)
-            thread = threading.Thread(target=getLinks, args=(path,pages,base))
+            thread = threading.Thread(target=getLinks, args=(path,pages,base, url))
             thread.start()
 
     return pages
