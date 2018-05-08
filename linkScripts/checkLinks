@@ -17,19 +17,19 @@ def getLinks(url, pages, base, parentUrl=""):
         # get page
         html_page = urllib2.urlopen(url)
     except httplib.InvalidURL, error:
-        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        print "\n" + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Invalid URL" + url)
     except urllib2.HTTPError, error:
-        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        print "\n" + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("HTTP error on " + url)
     except urllib2.URLError, error:
-        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        print "\n" + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("URL error on " + url)
     except ValueError, error:
-        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        print "\n" + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Value error on " + url)
     except AttributeError, error:
-        print str(error) + " -> " + url + " (Found in "+parentUrl+")"
+        print "\n" + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Attribute error on " + url)
 
     try:
