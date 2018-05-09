@@ -47,7 +47,8 @@ def getLinks(url, pages, base, parentUrl=""):
             continue
 
         path = formatUrl(path, base)
-        if base in path and path not in pages and path != None:
+        domain = urlparse(path).hostname
+        if domain in base and path not in pages and path != None:
             file = open("log.txt", "a")
             file.write(path + "\n")
             pages.append(path)
