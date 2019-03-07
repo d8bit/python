@@ -14,13 +14,15 @@ def getLinks(url, pages, base):
             return pages
 
         # get page
-        html_page = urllib2.urlopen(url)
+        html_page = unicode(urllib2.urlopen(url).read(), errors='ignore')
     except httplib.InvalidURL, error:
         print str(error) + " -> " + url
         return pages
     except urllib2.HTTPError, error:
-        print str(error) + " -> " + url
-        sys.exit("HTTP error on " + url)
+        if 508 != error.getcode():
+            print str(error) + " -> " + url
+            sys.exit("HTTP error on " + url)
+        return pages
     except urllib2.URLError, error:
         print str(error) + " -> " + url
         sys.exit("URL error on " + url)
