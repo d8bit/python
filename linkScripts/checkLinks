@@ -57,7 +57,7 @@ def getLinks(url, pages, base, parentUrl=""):
             pages.append(path)
             thread = threading.Thread(target=getLinks, args=(path,pages,base, url))
             thread.start()
-            time.sleep(0.2)
+            time.sleep(0.3)
 
     return pages
 
