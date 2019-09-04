@@ -21,7 +21,7 @@ def getLinks(url, pages, base, parentUrl=""):
         print "\n1. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Invalid URL" + url)
     except urllib2.HTTPError, error:
-        if 508 != error.getcode():
+        if 508 != error.getcode() and 504 != error.getcode():
             print "2. " + str(error) + " -> " + url
             sys.exit("HTTP error on " + url)
         return pages
@@ -34,6 +34,8 @@ def getLinks(url, pages, base, parentUrl=""):
     except AttributeError, error:
         print "\n5. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
         sys.exit("Attribute error on " + url)
+    except:
+        sys.exit("Unknown error on " + url)
 
     try:
         soup = BeautifulSoup(html_page)
@@ -52,13 +54,14 @@ def getLinks(url, pages, base, parentUrl=""):
         path = formatUrl(path, base)
         domain = urlparse(path).hostname
         if domain != None and domain in base and path not in pages and path != None:
-            file = open("log.txt", "a")
-            file.write(path + "\n")
+            # file = open("log.txt", "a")
+            # file.write(path + "\n")
             pages.append(path)
             thread = threading.Thread(target=getLinks, args=(path,pages,base, url))
             thread.start()
-            time.sleep(0.3)
+            time.sleep(0.1)
 
+    time.sleep(0.1)
     return pages
 
 def isValidLink(url):
@@ -89,5 +92,9 @@ if len(sys.argv) != 2:
 
 url = sys.argv[1]
 pages = []
-file = open("log.txt", "w")
+# file = open("log.txt", "w")
+
+start = time.time()
 getLinks(url, pages, url)
+end = time.time()
+print "Executed in " + str(end - start) + " seconds"
