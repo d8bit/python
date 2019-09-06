@@ -54,8 +54,8 @@ def getLinks(url, pages, base, parentUrl=""):
         path = formatUrl(path, base)
         domain = urlparse(path).hostname
         if domain != None and domain in base and path not in pages and path != None:
-            # file = open("log.txt", "a")
-            # file.write(path + "\n")
+            file = open("./log.txt", "a")
+            file.write(path + "\n")
             pages.append(path)
             thread = threading.Thread(target=getLinks, args=(path,pages,base, url))
             thread.start()
@@ -92,5 +92,5 @@ if len(sys.argv) != 2:
 
 url = sys.argv[1]
 pages = []
-# file = open("log.txt", "w")
+file = open("./log.txt", "w")
 getLinks(url, pages, url)
