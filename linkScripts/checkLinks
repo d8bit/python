@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import sys
 import time
-from urlparse import urlparse
-from BeautifulSoup import BeautifulSoup
-import urllib2
-import httplib
+from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+import urllib
+import http.client
 import re
 import requests
 import threading
@@ -16,30 +16,31 @@ def getLinks(url, pages, base, parentUrl=""):
             return pages
 
         # get page
-        html_page = unicode(urllib2.urlopen(url).read(), errors='ignore')
-    except httplib.InvalidURL, error:
-        print "\n1. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
-        sys.exit("Invalid URL" + url)
-    except urllib2.HTTPError, error:
+        html_page = urllib.request.urlopen(url).read()
+    except http.client.InvalidURL as error:
+        print ("\n1. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
+        sys.exit("Invalid URL: " + url)
+    except urllib.request.HTTPError as error:
         if 508 != error.getcode() and 504 != error.getcode():
-            print "2. " + str(error) + " -> " + url
+            print ("2. " + str(error) + " -> " + url +  " (Found in " + parentUrl + ")")
             sys.exit("HTTP error on " + url)
         return pages
-    except urllib2.URLError, error:
-        print "\n3. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
+    except urllib.request.URLError as error:
+        print ("\n3. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
         sys.exit("URL error on " + url)
-    except ValueError, error:
-        # print "\n4. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
+    except ValueError as error:
+        # print ("\n4. " + str(error) + " -> " + url + " (Found in "+parentUrl+")")
         sys.exit("Value error on " + url)
-    except AttributeError, error:
-        print "\n5. " + str(error) + " -> " + url + " (Found in "+parentUrl+")"
+    except AttributeError as error:
+        print ("\n5. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
         sys.exit("Attribute error on " + url)
     except:
-        sys.exit("Unknown error on " + url)
+        print("Unknown error on " + url)
+        raise
 
     try:
-        soup = BeautifulSoup(html_page)
-    except UnicodeEncodeError, error:
+        soup = BeautifulSoup(html_page, 'lxml')
+    except (UnicodeEncodeError, error):
         # Pdf file
         sys.exit("UnicodeEncodeError error on " + url)
 
@@ -79,7 +80,7 @@ def formatUrl(path, base):
             path = scheme + ":" + path
         if path[0] == '/':
             path = base + path
-    except IndexError:
+    except (IndexError):
         return base
     if not base in path and not 'http' in path:
         path = base + '/' + path
@@ -87,7 +88,7 @@ def formatUrl(path, base):
 
 # Expecting URL as parameter
 if len(sys.argv) != 2:
-    print 'File path needed'
+    print ('File path needed')
     sys.exit(0)
 
 url = sys.argv[1]
