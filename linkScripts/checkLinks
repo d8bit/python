@@ -18,21 +18,21 @@ def getLinks(url, pages, base, parentUrl=""):
         # get page
         html_page = urllib.request.urlopen(url).read()
     except http.client.InvalidURL as error:
-        print ("\n1. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
+        print("\n1. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
         sys.exit("Invalid URL: " + url)
     except urllib.request.HTTPError as error:
         if 508 != error.getcode() and 504 != error.getcode():
-            print ("2. " + str(error) + " -> " + url +  " (Found in " + parentUrl + ")")
+            print("2. " + str(error) + " -> " + url +  " (Found in " + parentUrl + ")")
             sys.exit("HTTP error on " + url)
         return pages
     except urllib.request.URLError as error:
-        print ("\n3. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
+        print("\n3. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
         sys.exit("URL error on " + url)
     except ValueError as error:
-        # print ("\n4. " + str(error) + " -> " + url + " (Found in "+parentUrl+")")
+        # print("\n4. " + str(error) + " -> " + url + " (Found in "+parentUrl+")")
         sys.exit("Value error on " + url)
     except AttributeError as error:
-        print ("\n5. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
+        print("\n5. " + str(error) + " -> " + url + " (Found in " + parentUrl + ")")
         sys.exit("Attribute error on " + url)
     except:
         print("Unknown error on " + url)
@@ -88,7 +88,7 @@ def formatUrl(path, base):
 
 # Expecting URL as parameter
 if len(sys.argv) != 2:
-    print ('File path needed')
+    print('File path needed')
     sys.exit(0)
 
 url = sys.argv[1]
