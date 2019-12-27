@@ -8,6 +8,7 @@ import http.client
 import re
 import requests
 import threading
+from multiprocessing import Process, Queue
 
 def getLinks(url, pages, base, parentUrl=""):
 
@@ -39,7 +40,7 @@ def getLinks(url, pages, base, parentUrl=""):
         raise
 
     try:
-        soup = BeautifulSoup(html_page, 'lxml')
+        soup = BeautifulSoup(html_page, 'html.parser')
     except (UnicodeEncodeError, error):
         # Pdf file
         sys.exit("UnicodeEncodeError error on " + url)
@@ -53,14 +54,19 @@ def getLinks(url, pages, base, parentUrl=""):
             continue
 
         path = formatUrl(path, base)
+        path = path.strip()
         domain = urlparse(path).hostname
-        if domain != None and domain in base and path not in pages and path != None:
+        pages_content = pages.get()
+        if domain != None and domain in base and path not in pages_content and path != None:
             # file = open("./log.txt", "a")
             # file.write(path + "\n")
-            pages.append(path)
-            thread = threading.Thread(target=getLinks, args=(path,pages,base, url))
-            thread.start()
+            pages_content.append(path)
+            pages.put(pages_content)
+            process = Process(target=getLinks, args=(path,pages,base,url))
+            process.start()
             time.sleep(0.1)
+        else:
+            pages.put(pages_content)
 
     time.sleep(0.1)
     return pages
@@ -86,12 +92,17 @@ def formatUrl(path, base):
         path = base + '/' + path
     return path
 
+# sys.setrecursionlimit(1500)
 # Expecting URL as parameter
 if len(sys.argv) != 2:
     print('File path needed')
     sys.exit(0)
 
 url = sys.argv[1]
-pages = []
+# pages = []
+pages = Queue()
+new_array = []
+pages.put(new_array)
+
 # file = open("./log.txt", "w")
 getLinks(url, pages, url)
