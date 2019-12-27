@@ -7,7 +7,6 @@ import urllib
 import http.client
 import re
 import requests
-import threading
 from multiprocessing import Process, Queue
 
 def getLinks(url, pages, base, parentUrl=""):
